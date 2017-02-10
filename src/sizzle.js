@@ -8,7 +8,9 @@
  *
  * Date: @DATE
  */
-(function( window ) {
+(function() {
+
+function _factory( window ) {
 
 var i,
 	support,
@@ -2265,12 +2267,23 @@ Sizzle.noConflict = function() {
 
 if ( typeof define === "function" && define.amd ) {
 	define(function() { return Sizzle; });
-// Sizzle requires that there be a global window in Common-JS like environments
-} else if ( typeof module !== "undefined" && module.exports ) {
-	module.exports = Sizzle;
-} else {
+} else if ( typeof module === "undefined" || !module.exports ) {
 	window.Sizzle = Sizzle;
 }
-// EXPOSE
 
-})( window );
+}
+
+// In CommonJS like environments, expose as a factory taking a window argument
+// unless there is a global window object
+if ( typeof module !== "undefined" && module.exports ) {
+	if ( typeof window === "undefined" ) {
+		module.exports = _factory;
+	} else {
+		_factory(window);
+		module.exports = window.Sizzle;
+	}
+} else {
+	_factory(window);
+}
+
+})();
